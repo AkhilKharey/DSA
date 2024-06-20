@@ -1,4 +1,4 @@
-        // ---------------------------------------------------------------------------better approach O(nlogn)
+        // ---------------------------------------------------------------------------approach O(nlogn)
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
@@ -14,7 +14,7 @@ public:
         return 0;
     }
 };
-// -------------------------------------------------------------moores voting algorithm
+// ------------------------------------------------------------- optimal approach(O(n))moores voting algorithm
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
