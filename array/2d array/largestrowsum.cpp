@@ -9,7 +9,7 @@ void largestrowsum(int a[][3],int m,int n)
     int sum=0;
     for(int j=0;j<3;j++)
     {
-    sum =sum+a[i][j];
+    sum = sum+a[i][j];
     }
     if(sum>max_sum)
     {

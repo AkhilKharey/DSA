@@ -20,6 +20,8 @@ public:
             }
             if(mp.size()<=k)
             {
+                // we are aadding size of the array here instead of +1 because if a 
+                // subarray is valis in this question then all the part of that subarray will also be valid
                 cnt+=right-left+1;
             }
             right++;
