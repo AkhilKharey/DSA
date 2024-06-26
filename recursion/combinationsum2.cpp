@@ -4,12 +4,10 @@
 
 // Note: The solution set must not contain duplicate combinations.
 
- 
-
 // Example 1:
 
 // Input: candidates = [10,1,2,7,6,1,5], target = 8
-// Output: 
+// Output:
 // [
 // [1,1,6],
 // [1,2,5],
@@ -19,48 +17,47 @@
 // Example 2:
 
 // Input: candidates = [2,5,2,1,2], target = 5
-// Output: 
+// Output:
 // [
 // [1,2,2],
 // [5]
 // ]
- 
 
 // Constraints:
 
 // 1 <= candidates.length <= 100
 // 1 <= candidates[i] <= 50
 // 1 <= target <= 30
-class Solution {
-public:
-void findCombination(int index,vector<vector<int>> &ans,vector<int>&ds,vector<int>&arr,int target)
+class Solution
 {
-   
-        if(target==0)
-           { ans.push_back(ds);
-            return;
-           }
-    
-    for(int i=index;i<arr.size();i++)
+public:
+    void findCombination(int index, vector<vector<int>> &ans, vector<int> &ds, vector<int> &arr, int target)
     {
-        if(i>index&&arr[i]==arr[i-1])
-        continue;
-        if(arr[i]>target)
-        break;
-        ds.push_back(arr[i]);
-findCombination(i+1,ans,ds,arr,target-arr[i]);
-ds.pop_back();
 
+        if (target == 0)
+        {
+            ans.push_back(ds);
+            return;
+        }
+
+        for (int i = index; i < arr.size(); i++)
+        {
+            if (i > index && arr[i] == arr[i - 1])
+                continue;
+            if (arr[i] > target)
+                break;
+            ds.push_back(arr[i]);
+            findCombination(i + 1, ans, ds, arr, target - arr[i]);
+            ds.pop_back();
+        }
+        return;
     }
-return;
-
-}
-    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+    vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
+    {
         vector<vector<int>> ans;
         vector<int> ds;
-        sort(candidates.begin(),candidates.end());
-        findCombination(0,ans,ds,candidates,target);
+        sort(candidates.begin(), candidates.end());
+        findCombination(0, ans, ds, candidates, target);
         return ans;
-
     }
 };
