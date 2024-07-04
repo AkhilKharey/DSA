@@ -53,7 +53,7 @@ Node* sortList(Node *head){
             temp->data=1;
             temp=temp->next;
         }
-while(tc--&&temp!=NULL)
+    while(tc--&&temp!=NULL)
         {
             temp->data=2;
             temp=temp->next;
@@ -62,7 +62,7 @@ while(tc--&&temp!=NULL)
     
     return head;
 }
----------------------------------------------------------------------------------------APPROACH2
+// ---------------------------------------------------------------------------------------APPROACH2
 void InsertAtTail(Node* &tail,Node* temp)
 {
   tail->next=temp;

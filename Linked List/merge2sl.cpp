@@ -33,6 +33,7 @@ Node* sortedMerge(Node* head1, Node* head2)
             prev=temp;
             
         }
+        // dusri list ka element beech me ni arha phle k prev aur curr k to mtlb bad me aega 
         else if(curr->next==NULL)
         {
             curr->next=head2;
