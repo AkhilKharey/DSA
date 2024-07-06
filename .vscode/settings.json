@@ -26,7 +26,8 @@
         "xlocinfo": "cpp",
         "xtree": "cpp",
         "bitset": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "iostream": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
