@@ -13,7 +13,7 @@ class Solution
     bool ispar(string x)
     {
         // Your code here
-            stack<char>st;
+        stack<char>st;
         for(auto &ch:x)
         {
              if(ch=='('||ch=='{'||ch=='[')
