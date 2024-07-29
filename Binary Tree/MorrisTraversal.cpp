@@ -1,73 +1,81 @@
- class Solution {
+class Solution
+{
 public:
-// ------------------------------------------------------------------------------inorder
-    vector<int> inorderTraversal(TreeNode* root) {
- vector<int>inorder;
-    TreeNode* curr=root;
-    while(curr)
+    // ------------------------------------------------------------------------------inorder
+    vector<int> inorderTraversal(TreeNode *root)
     {
-        if(!curr->left)
+        vector<int> inorder;
+        TreeNode *curr = root;
+        while (curr)
         {
-            inorder.push_back(curr->val);
-            curr=curr->right;
-        }
-        else
-        {
-            TreeNode* prev=curr->left;
-            while(prev->right && prev->right!=curr)
+            if (!curr->left)
             {
-                prev=prev->right;
+                inorder.push_back(curr->val);
+                curr = curr->right;
             }
-            if(prev->right==NULL)
+            else
             {
-                prev->right=curr;
-                curr=curr->left;
+                TreeNode *prev = curr->left;
+                // go to the left subtree and then go to the extreme right
+                //  which is the last guy in inorder of left subtree
+                while (prev->right && prev->right != curr)
+                {
+                    prev = prev->right;
+                }
+                // thread ni bani hai to thread banake left me janeka
+                if (prev->right == NULL)
+                {
+                    prev->right = curr;
+                    curr = curr->left;
+                }
+                // thread already  bani hai to thread hatake right me janeka
+                if (prev->right == curr)
+                {
+                    prev->right = NULL;
+                    inorder.push_back(curr->val);
+                    curr = curr->right;
+                }
             }
-           if(prev->right==curr)
-           {
-               prev->right=NULL;
-               inorder.push_back(curr->val);
-               curr=curr->right;
-           }
         }
-    }
-    return inorder;
+        return inorder;
     }
 };
-class Solution {
+class Solution
+{
 public:
-    vector<int> preorderTraversal(TreeNode* root) {
-// -------------------------------------------------------------------------preorder    
-         vector<int>preorder;
-    TreeNode* curr=root;
-    while(curr)
+    vector<int> preorderTraversal(TreeNode *root)
     {
-        if(!curr->left)
+        // -------------------------------------------------------------------------preorder
+        vector<int> preorder;
+        TreeNode *curr = root;
+        while (curr)
         {
-            preorder.push_back(curr->val);
-            curr=curr->right;
-        }
-        else
-        {
-            TreeNode* prev=curr->left;
-            while(prev->right && prev->right!=curr)
+            if (!curr->left)
             {
-                prev=prev->right;
-            }
-            if(prev->right==NULL)
-            {
-                prev->right=curr;
                 preorder.push_back(curr->val);
-                curr=curr->left;
+                curr = curr->right;
             }
-           if(prev->right==curr)
-           {
-               prev->right=NULL;
-               
-               curr=curr->right;
-           }
+            else
+            {
+                TreeNode *prev = curr->left;
+                while (prev->right && prev->right != curr)
+                {
+                    prev = prev->right;
+                }
+                if (prev->right == NULL)
+                {
+                    prev->right = curr;
+                    preorder.push_back(curr->val);
+                    curr = curr->left;
+                }
+                if (prev->right == curr)
+                {
+                    prev->right = NULL;
+
+                    curr = curr->right;
+                }
+            }
         }
-    }
-    return preorder;
+        return preorder;
     }
 };
