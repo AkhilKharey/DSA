@@ -1,21 +1,22 @@
 //{ Driver Code Starts
-//Initial Template for C++
-
+// Initial Template for C++
 
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX_HEIGHT 100000
 
 // Tree Node
-struct Node {
+struct Node
+{
     int data;
-    Node* left;
-    Node* right;
+    Node *left;
+    Node *right;
 };
 
 // Utility function to create a new Tree Node
-Node* newNode(int val) {
-    Node* temp = new Node;
+Node *newNode(int val)
+{
+    Node *temp = new Node;
     temp->data = val;
     temp->left = NULL;
     temp->right = NULL;
@@ -23,39 +24,43 @@ Node* newNode(int val) {
     return temp;
 }
 
-
 // Function to Build Tree
-Node* buildTree(string str) {
+Node *buildTree(string str)
+{
     // Corner Case
-    if (str.length() == 0 || str[0] == 'N') return NULL;
+    if (str.length() == 0 || str[0] == 'N')
+        return NULL;
 
     // Creating vector of strings from input
     // string after spliting by space
     vector<string> ip;
 
     istringstream iss(str);
-    for (string str; iss >> str;) ip.push_back(str);
+    for (string str; iss >> str;)
+        ip.push_back(str);
 
     // Create the root of the tree
-    Node* root = newNode(stoi(ip[0]));
+    Node *root = newNode(stoi(ip[0]));
 
     // Push the root to the queue
-    queue<Node*> queue;
+    queue<Node *> queue;
     queue.push(root);
 
     // Starting from the second element
     int i = 1;
-    while (!queue.empty() && i < ip.size()) {
+    while (!queue.empty() && i < ip.size())
+    {
 
         // Get and remove the front of the queue
-        Node* currNode = queue.front();
+        Node *currNode = queue.front();
         queue.pop();
 
         // Get the current node's value from the string
         string currVal = ip[i];
 
         // If the left child is not null
-        if (currVal != "N") {
+        if (currVal != "N")
+        {
 
             // Create the left child for the current node
             currNode->left = newNode(stoi(currVal));
@@ -66,11 +71,13 @@ Node* buildTree(string str) {
 
         // For the right child
         i++;
-        if (i >= ip.size()) break;
+        if (i >= ip.size())
+            break;
         currVal = ip[i];
 
         // If the right child is not null
-        if (currVal != "N") {
+        if (currVal != "N")
+        {
 
             // Create the right child for the current node
             currNode->right = newNode(stoi(currVal));
@@ -83,7 +90,6 @@ Node* buildTree(string str) {
 
     return root;
 }
-
 
 // } Driver Code Ends
 /* Tree node structure  used in the program
@@ -98,42 +104,46 @@ struct Node {
         left = right = NULL;
     }
 };*/
-
-class Solution{
-    public:
+u class Solution
+{
+public:
     // Create a class to keep trace of maxNode,minNode,maxSize of BST.
-    class NodeValue{
-        public:
-        int maxNode,minNode,maxSize;
-        NodeValue(int minNode,int maxNode,int maxSize){
-            this->minNode=minNode;
-            this->maxNode=maxNode;
-            this->maxSize=maxSize;
+    class NodeValue
+    {
+    public:
+        int maxNode, minNode, maxSize;
+        NodeValue(int minNode, int maxNode, int maxSize)
+        {
+            this->minNode = minNode;
+            this->maxNode = maxNode;
+            this->maxSize = maxSize;
         }
     };
     /*You are required to complete this method */
     // Return the size of the largest sub-tree which is also a BST
-    NodeValue BST(Node* root){
+    NodeValue BST(Node *root)
+    {
         // empty tree, size=0;
-        if(!root) 
-            return NodeValue(INT_MAX,INT_MIN,0);
-            
+        if (!root)
+            return NodeValue(INT_MAX, INT_MIN, 0);
+
         // Get left & right Subtree-value;
-        auto left=BST(root->left);
-        auto right=BST(root->right);
-        
-        if(left.maxNode < root->data && root->data < right.minNode){
+        auto left = BST(root->left);
+        auto right = BST(root->right);
+
+        if (left.maxNode < root->data && root->data < right.minNode)
+        {
             // valid BST
-            return NodeValue(min(root->data,left.minNode),max(root->data,right.maxNode),left.maxSize+right.maxSize+1);
+            return NodeValue(min(root->data, left.minNode), max(root->data, right.maxNode), left.maxSize + right.maxSize + 1);
         }
-        
-        //otherwise not a BST
-        return NodeValue(INT_MIN,INT_MAX,max(left.maxSize,right.maxSize));
+
+        // otherwise not a BST
+        return NodeValue(INT_MIN, INT_MAX, max(left.maxSize, right.maxSize));
     }
-    
+
     int largestBst(Node *root)
     {
-    	return BST(root).maxSize;
+        return BST(root).maxSize;
     }
 };
 
@@ -141,18 +151,17 @@ class Solution{
 
 /* Driver program to test size function*/
 
-  
+int main()
+{
 
-int main() {
-
-   
     int t;
     scanf("%d ", &t);
-    while (t--) {
+    while (t--)
+    {
         string s, ch;
         getline(cin, s);
-        
-        Node* root = buildTree(s);
+
+        Node *root = buildTree(s);
         Solution ob;
         cout << ob.largestBst(root) << endl;
     }
