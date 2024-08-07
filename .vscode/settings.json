@@ -27,7 +27,8 @@
         "xtree": "cpp",
         "bitset": "cpp",
         "set": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "xlocale": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
