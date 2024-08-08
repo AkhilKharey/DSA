@@ -1,165 +1,64 @@
+#include <iostream>
+#include <list>
+#include <string>
 
-% MPSK
+using namespace std;
 
-    % Define different values of M(number of symbols)
-          M_values = [ 2, 4, 8, 16, 32 ];
+class StudentList
+{
+private:
+    list<string> students;
 
-% Eb / N0 range in dB Eb_N0_dB = 0 : 20;
+public:
+    void addStudent(const string &rollNumber)
+    {
+        students.push_front(rollNumber);
+    }
 
-% Convert Eb / N0 from dB to linear scale Eb_N0 = 10. ^ (Eb_N0_dB / 10);
+    void deleteByPrefix(const string &prefix)
+    {
+        for (auto it = students.begin(); it != students.end();)
+        {
+            if (it->substr(0, prefix.size()) == prefix)
+            {
+                it = students.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
 
-% Initialize arrays to store results
-        Ps_mpsk = zeros(length(M_values), length(Eb_N0));
+    void printList() const
+    {
+        for (const auto &rollNumber : students)
+        {
+            cout << "Roll: " << rollNumber << endl;
+        }
+    }
+};
 
-% Loop over each value of M
-for i = 1:length(M_values)
-    M = M_values(i);
+int main()
+{
+    StudentList list;
 
-    % Calculate probability of bit error for MPSK over AWGN channel
-    Pe_mpsk = qfunc(sqrt(2 * Eb_N0 * sin(pi/M)^2));
+    int n;
+    cin >> n;
 
-    % Calculate probability of symbol error
-            Ps_mpsk(i, :) = 1 - (1 - Pe_mpsk).^ log2(M);
-    end
+    for (int i = 0; i < n; ++i)
+    {
+        string rollNumber;
+        cin >> rollNumber;
+        list.addStudent(rollNumber);
+    }
 
-        % Plotting
-              figure;
-semilogy(Eb_N0_dB, Ps_mpsk','-o');
-grid on;
-xlabel('Eb/N0 (dB)');
-ylabel('Probability of Symbol Error (Ps)');
-title('Probability of Symbol Error for MPSK');
-legend('M=2', 'M=4', 'M=8', 'M=16', 'M=32');
+    string prefix;
+    cin >> prefix;
 
-%MPAM
+    list.deleteByPrefix(prefix);
 
-% Define different values of M (number of symbols)
-M_values = [2, 4, 8, 16, 32];
+    list.printList();
 
-% Eb/N0 range in dB
-Eb_N0_dB = 0:20;
-
-% Convert Eb/N0 from dB to linear scale
-Eb_N0 = 10.^(Eb_N0_dB / 10);
-
-% Initialize arrays to store results
-Ps_mpam = zeros(length(M_values), length(Eb_N0));
-
-% Loop over each value of M
-for i = 1:length(M_values)
-    M = M_values(i);
-   
-    % Calculate probability of bit error for MPAM over AWGN channel
-    Pe_mpam = qfunc(sqrt(3 * log2(M) * Eb_N0 / (M^2 - 1)));
-   
-    % Calculate probability of symbol error
-    Ps_mpam(i, :) = 1 - (1 - Pe_mpam).^log2(M);
-end
-
-% Plotting
-figure;
-semilogy(Eb_N0_dB, Ps_mpam');
-grid on;
-xlabel('Eb/N0 (dB)');
-ylabel('Probability of Symbol Error (Ps)');
-title('Probability of Symbol Error for MPAM');
-legend('M=2', 'M=4', 'M=8', 'M=16', 'M=32');
-
-
-%MQAM
-
-% Define different values of M (number of symbols)
-M_values = [2, 4, 8, 16, 32];
-
-% Eb/N0 range in dB
-Eb_N0_dB = 0:20;
-
-% Convert Eb/N0 from dB to linear scale
-Eb_N0 = 10.^(Eb_N0_dB / 10);
-
-% Initialize arrays to store results
-Ps_mqam = zeros(length(M_values), length(Eb_N0));
-
-% Loop over each value of M
-for i = 1:length(M_values)
-    M = M_values(i);
-   
-    % Calculate probability of bit error for MQAM over AWGN channel
-    Pe_mqam = 2 * (1 - 1/sqrt(M)) * qfunc(sqrt(3 * log2(M) * Eb_N0 / (2 * (M - 1))));
-   
-    % Calculate probability of symbol error
-    Ps_mqam(i, :) = 1 - (1 - Pe_mqam).^log2(M);
-end
-
-% Plotting
-figure;
-semilogy(Eb_N0_dB, Ps_mqam','-o');
-grid on;
-xlabel('Eb/N0 (dB)');
-ylabel('Probability of Symbol Error (Ps)');
-title('Probability of Symbol Error for MQAM');
-legend('M=2', 'M=4', 'M=8', 'M=16', 'M=32');
-
-
-%coherently detected MFSK
-
-% Define different values of M (number of symbols)
-M_values = [2, 4, 8, 16, 32];
-
-% Eb/N0 range in dB
-Eb_N0_dB = 0:20;
-
-% Convert Eb/N0 from dB to linear scale
-Eb_N0 = 10.^(Eb_N0_dB / 10);
-
-% Initialize arrays to store results
-Ps_mfsk = zeros(length(M_values), length(Eb_N0));
-
-% Loop over each value of M
-for i = 1:length(M_values)
-    M = M_values(i);
-   
-    % Calculate probability of symbol error for MFSK over AWGN channel
-    Ps_mfsk(i, :) = 2 * qfunc(sqrt((6 * log2(M)) / (M^2 - 1) * Eb_N0));
-end
-
-% Plotting
-figure;
-semilogy(Eb_N0_dB, Ps_mfsk');
-grid on;
-xlabel('Eb/N0 (dB)');
-ylabel('Probability of Symbol Error (Ps)');
-title('Probability of Symbol Error for MFSK');
-legend('M=2', 'M=4', 'M=8', 'M=16', 'M=32');
-
-%Non coherently detected MFSK
-
-
-% Define different values of M (number of symbols)
-M_values = [2, 4, 8, 16, 32];
-
-% Eb/N0 range in dB
-Eb_N0_dB = 0:20;
-
-% Convert Eb/N0 from dB to linear scale
-Eb_N0 = 10.^(Eb_N0_dB / 10);
-
-% Initialize arrays to store results
-Ps_mfsk_noncoherent = zeros(length(M_values), length(Eb_N0));
-
-% Loop over each value of M
-for i = 1:length(M_values)
-    M = M_values(i);
-   
-    % Calculate probability of symbol error for non-coherent MFSK ob  ver AWGN channel
-    Ps_mfsk_noncoherent(i, :) = 2 * qfunc(sqrt((3 * log2(M)) / (2 * (M^2 - 1)) * Eb_N0));
-end
-
-% Plotting
-figure;
-semilogy(Eb_N0_dB, Ps_mfsk_noncoherent');
-grid on;
-xlabel('Eb/N0 (dB)');
-ylabel('Probability of Symbol Error (Ps)');
-title('Probability of Symbol Error for Non-coherent MFSK');
-legend('M=2', 'M=4', 'M=8', 'M=16', 'M=32');
+    return 0;
+}
