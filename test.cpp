@@ -1,77 +1,53 @@
 #include <iostream>
+#include <vector>
 #include <string>
-#include <stdexcept>
 
 using namespace std;
 
-class InvalidInputException : public runtime_error
-{
-public:
-    InvalidInputException(const string &message) : runtime_error(message) {}
-};
+const int MOD = 1e9 + 7;
 
-class NumberManipulation
+// Function to count the number of set bits in an integer
+int countSetBits(int n)
 {
-private:
-    int digits[9];
+    return __builtin_popcount(n);
+}
 
-public:
-    void extractDigits(const string &number)
+// Recursive function to simulate the K transformations and check if the result is 1
+bool transformTo1(int x, int k)
+{
+    while (k > 0 && x > 1)
     {
-        if (number.length() != 9)
-        {
-            throw InvalidInputException("Invalid Input Exception: ISBN must be exactly 9 digits");
-        }
+        x = countSetBits(x);
+        k--;
+    }
+    return x == 1 && k == 0;
+}
 
-        for (int i = 0; i < 9; ++i)
+int decryptions(string N, int K)
+{
+    int upperLimit = stoi(N, nullptr, 2); // Convert binary string N to an integer
+    int count = 0;
+
+    for (int i = 1; i <= upperLimit; ++i)
+    {
+        if (transformTo1(i, K))
         {
-            if (!isdigit(number[i]))
-            {
-                throw InvalidInputException("Input must contain only digits");
-            }
-            digits[i] = number[i] - '0';
+            count++;
         }
     }
 
-    char findLastDigit()
-    {
-        int sum = 0;
-        for (int i = 0; i < 9; ++i)
-        {
-            sum += digits[i] * (i + 1);
-        }
-
-        int checksum = sum % 11;
-
-        if (checksum == 10)
-        {
-            return 'X';
-        }
-        else
-        {
-            return checksum + '0';
-        }
-    }
-};
+    return count;
+}
 
 int main()
 {
-    string input;
-    cin >> input;
+    string N;
+    int K;
 
-    NumberManipulation nm;
+    cin >> N;
+    cin >> K;
 
-    try
-    {
-        nm.extractDigits(input);
-        char lastDigit = nm.findLastDigit();
-        string fullISBN = input + lastDigit;
-        cout << "ISBN : " << fullISBN << endl;
-    }
-    catch (const InvalidInputException &e)
-    {
-        cerr << e.what() << endl;
-    }
+    cout << decryptions(N, K) << endl;
 
     return 0;
 }
