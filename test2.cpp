@@ -1,23 +1,62 @@
-int dp[71][5000];
-int rec(int row, int m, int n, int sum, vector<vector<int>> &mat, int target)
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<int> solve(int N, vector<int> A, int Q, vector<vector<int>> Queries)
 {
-    if (row == m)
+    vector<int> results;
+
+    // Process each query
+    for (const auto &query : Queries)
     {
-        return abs(sum - target);
+        if (query.size() == 4)
+        { // Type 2 Query (L R X)
+            int L = query[1];
+            int R = query[2];
+            int X = query[3];
+            int found = -1;
+
+            // Search in the specified range
+            for (int i = L - 1; i <= R - 1; ++i)
+            {
+                if (A[i] <= X)
+                {
+                    found = i + 1; // Convert back to 1-based index
+                    break;
+                }
+            }
+            results.push_back(found);
+        }
+        else if (query.size() == 3)
+        { // Type 1 Query (L X)
+            int L = query[1];
+            int X = query[2];
+            A[L - 1] = X; // Update the value at index L-1
+        }
     }
-    if (dp[row][sum] != -1)
-        return dp[row][sum];
-    int ans = 1e9;
-    for (int col = 0; col < n; col++)
-    {
-        ans = min(ans, rec(row + 1, m, n, sum + mat[row][col], mat, target));
-    }
-    return dp[row][sum] = ans;
+
+    return results;
 }
-int minimizeTheDifference(vector<vector<int>> &mat, int target)
+
+int main()
 {
-    int m = mat.size();
-    int n = mat[0].size();
-    memset(dp, -1, sizeof(dp));
-    return rec(0, m, n, 0, mat, target);
+    // Test case directly added
+    int N = 10;
+    vector<int> A = {12, 71, 80, 22, 48, 13, 75, 81, 68, 51};
+    int Q = 4;
+    vector<vector<int>> Queries = {
+        {2, 1, 10, 27}, // Query 1: Find first index in range [1, 10] where value ≤ 27
+        {1, 2, 49},     // Query 2: Update index 2 to 49
+        {1, 3, 26},     // Query 3: Update index 3 to 26
+        {2, 2, 10, 7}   // Query 4: Find first index in range [2, 10] where value ≤ 7
+    };
+
+    vector<int> results = solve(N, A, Q, Queries);
+    for (int result : results)
+    {
+        cout << result << endl;
+    }
+
+    return 0;
 }

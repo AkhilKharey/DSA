@@ -48,6 +48,5 @@ int main()
     cin >> K;
 
     cout << decryptions(N, K) << endl;
-
     return 0;
 }
