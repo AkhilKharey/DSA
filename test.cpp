@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <queue>
+#include <bitset>
 
 using namespace std;
 
@@ -12,31 +14,50 @@ int countSetBits(int n)
     return __builtin_popcount(n);
 }
 
-// Recursive function to simulate the K transformations and check if the result is 1
-bool transformTo1(int x, int k)
+// Function to precompute the number of steps to reach 1 for each number up to maxNum
+vector<int> precomputeSteps(int maxNum)
 {
-    while (k > 0 && x > 1)
+    vector<int> steps(maxNum + 1, -1); // Initialize with -1 meaning uncomputed
+    queue<int> q;
+
+    // Start with number 1, which requires 0 steps to become 1
+    steps[1] = 0;
+    q.push(1);
+
+    while (!q.empty())
     {
-        x = countSetBits(x);
-        k--;
+        int num = q.front();
+        q.pop();
+        int currentSteps = steps[num];
+
+        // Calculate the next number in the sequence
+        int nextNum = countSetBits(num);
+        if (nextNum <= maxNum && steps[nextNum] == -1)
+        {
+            steps[nextNum] = currentSteps + 1;
+            q.push(nextNum);
+        }
     }
-    return x == 1 && k == 0;
+
+    return steps;
 }
 
-int decryptions(string N, int K)
+// Function to count how many numbers can be reduced to 1 in exactly K steps
+int decryptions(const string &N, int K)
 {
     int upperLimit = stoi(N, nullptr, 2); // Convert binary string N to an integer
+    vector<int> steps = precomputeSteps(upperLimit);
     int count = 0;
 
-    for (int i = 1; i <= upperLimit; ++i)
+    for (int num = 1; num <= upperLimit; ++num)
     {
-        if (transformTo1(i, K))
+        if (steps[num] == K)
         {
             count++;
         }
     }
 
-    return count;
+    return count % MOD;
 }
 
 int main()

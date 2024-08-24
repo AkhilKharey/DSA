@@ -1,62 +1,85 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-vector<int> solve(int N, vector<int> A, int Q, vector<vector<int>> Queries)
+// Define the structure for the tree node
+struct TreeNode
 {
-    vector<int> results;
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
 
-    // Process each query
-    for (const auto &query : Queries)
+// Function to create a binary tree from a vector
+TreeNode *createTreeFromVector(const vector<string> &nodes)
+{
+    if (nodes.empty() || nodes[0] == "null")
+        return nullptr;
+
+    TreeNode *root = new TreeNode(stoi(nodes[0]));
+    queue<TreeNode *> nodeQueue;
+    nodeQueue.push(root);
+    int index = 1;
+
+    while (!nodeQueue.empty() && index < nodes.size())
     {
-        if (query.size() == 4)
-        { // Type 2 Query (L R X)
-            int L = query[1];
-            int R = query[2];
-            int X = query[3];
-            int found = -1;
+        TreeNode *current = nodeQueue.front();
+        nodeQueue.pop();
 
-            // Search in the specified range
-            for (int i = L - 1; i <= R - 1; ++i)
-            {
-                if (A[i] <= X)
-                {
-                    found = i + 1; // Convert back to 1-based index
-                    break;
-                }
-            }
-            results.push_back(found);
+        // Create left child
+        if (nodes[index] != "null")
+        {
+            current->left = new TreeNode(stoi(nodes[index]));
+            nodeQueue.push(current->left);
         }
-        else if (query.size() == 3)
-        { // Type 1 Query (L X)
-            int L = query[1];
-            int X = query[2];
-            A[L - 1] = X; // Update the value at index L-1
+        index++;
+
+        // Create right child
+        if (index < nodes.size() && nodes[index] != "null")
+        {
+            current->right = new TreeNode(stoi(nodes[index]));
+            nodeQueue.push(current->right);
         }
+        index++;
     }
 
-    return results;
+    return root;
 }
 
-int main()
+// Function to check if a binary tree is a valid BST
+bool isValid(TreeNode *root)
 {
-    // Test case directly added
-    int N = 10;
-    vector<int> A = {12, 71, 80, 22, 48, 13, 75, 81, 68, 51};
-    int Q = 4;
-    vector<vector<int>> Queries = {
-        {2, 1, 10, 27}, // Query 1: Find first index in range [1, 10] where value ≤ 27
-        {1, 2, 49},     // Query 2: Update index 2 to 49
-        {1, 3, 26},     // Query 3: Update index 3 to 26
-        {2, 2, 10, 7}   // Query 4: Find first index in range [2, 10] where value ≤ 7
-    };
+    stack<TreeNode *> nodeStack;
+    TreeNode *prev = nullptr;
+    TreeNode *curr = root;
 
-    vector<int> results = solve(N, A, Q, Queries);
-    for (int result : results)
+    while (curr != nullptr || !nodeStack.empty())
     {
-        cout << result << endl;
+        while (curr != nullptr)
+        {
+            nodeStack.push(curr);
+            curr = curr->left;
+        }
+
+        curr = nodeStack.top();
+        nodeStack.pop();
+
+        // Check the BST property
+        if (prev != nullptr && curr->val <= prev->val)
+        {
+            return false;
+        }
+
+        prev = curr;
+        curr = curr->right;
     }
 
-    return 0;
+    return true;
+}
+
+bool isValidBST(const vector<string> &root)
+{
+    TreeNode *treeRoot = createTreeFromVector(root);
+    return isValid(treeRoot);
 }
