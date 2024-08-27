@@ -1,73 +1,43 @@
 #include <iostream>
 #include <vector>
-#include <string>
-#include <queue>
-#include <bitset>
 
 using namespace std;
 
-const int MOD = 1e9 + 7;
-
-// Function to count the number of set bits in an integer
-int countSetBits(int n)
+void findEliminatedPlayers(int N, int K)
 {
-    return __builtin_popcount(n);
-}
+    vector<bool> visited(N, false);
+    int current = 0;
+    visited[current] = true;
 
-// Function to precompute the number of steps to reach 1 for each number up to maxNum
-vector<int> precomputeSteps(int maxNum)
-{
-    vector<int> steps(maxNum + 1, -1); // Initialize with -1 meaning uncomputed
-    queue<int> q;
-
-    // Start with number 1, which requires 0 steps to become 1
-    steps[1] = 0;
-    q.push(1);
-
-    while (!q.empty())
+    for (int i = 0; i < N - 1; ++i)
     {
-        int num = q.front();
-        q.pop();
-        int currentSteps = steps[num];
+        current = (current + K) % N;
+        visited[current] = true;
+    }
 
-        // Calculate the next number in the sequence
-        int nextNum = countSetBits(num);
-        if (nextNum <= maxNum && steps[nextNum] == -1)
+    bool anyEliminated = false;
+    for (int i = 0; i < N; ++i)
+    {
+        if (!visited[i])
         {
-            steps[nextNum] = currentSteps + 1;
-            q.push(nextNum);
+            cout << i + 1 << " ";
+            anyEliminated = true;
         }
     }
 
-    return steps;
-}
-
-// Function to count how many numbers can be reduced to 1 in exactly K steps
-int decryptions(const string &N, int K)
-{
-    int upperLimit = stoi(N, nullptr, 2); // Convert binary string N to an integer
-    vector<int> steps = precomputeSteps(upperLimit);
-    int count = 0;
-
-    for (int num = 1; num <= upperLimit; ++num)
+    if (!anyEliminated)
     {
-        if (steps[num] == K)
-        {
-            count++;
-        }
+        cout << 0;
     }
-
-    return count % MOD;
+    cout << endl;
 }
 
 int main()
 {
-    string N;
-    int K;
+    int N, K;
+    cin >> N >> K;
 
-    cin >> N;
-    cin >> K;
+    findEliminatedPlayers(N, K);
 
-    cout << decryptions(N, K) << endl;
     return 0;
 }
