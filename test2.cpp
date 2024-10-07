@@ -1,85 +1,62 @@
-#include <bits/stdc++.h>
-
+#include <iostream>
+#include <vector>
+#include <unordered_map>
 using namespace std;
 
-// Define the structure for the tree node
-struct TreeNode
+int minNumberOfOperations(vector<int> &A, int N)
 {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
-
-// Function to create a binary tree from a vector
-TreeNode *createTreeFromVector(const vector<string> &nodes)
-{
-    if (nodes.empty() || nodes[0] == "null")
-        return nullptr;
-
-    TreeNode *root = new TreeNode(stoi(nodes[0]));
-    queue<TreeNode *> nodeQueue;
-    nodeQueue.push(root);
-    int index = 1;
-
-    while (!nodeQueue.empty() && index < nodes.size())
+    int totalSum = 0;
+    for (int num : A)
     {
-        TreeNode *current = nodeQueue.front();
-        nodeQueue.pop();
-
-        // Create left child
-        if (nodes[index] != "null")
-        {
-            current->left = new TreeNode(stoi(nodes[index]));
-            nodeQueue.push(current->left);
-        }
-        index++;
-
-        // Create right child
-        if (index < nodes.size() && nodes[index] != "null")
-        {
-            current->right = new TreeNode(stoi(nodes[index]));
-            nodeQueue.push(current->right);
-        }
-        index++;
+        totalSum += num;
     }
 
-    return root;
-}
+    int target = totalSum - N; // We need to find a subarray with sum equal to `target`
+    // // If target is 0, no need to remove any elements
+    if (target < 0)
+        return -1; // If total sum is less than N, it's impossible
 
-// Function to check if a binary tree is a valid BST
-bool isValid(TreeNode *root)
-{
-    stack<TreeNode *> nodeStack;
-    TreeNode *prev = nullptr;
-    TreeNode *curr = root;
+    int maxLen = -1;
+    int currentSum = 0;
+    unordered_map<int, int> sumMap; // To store prefix sums and their indices
+    sumMap[0] = -1;                 // Initialize to handle cases where prefix sum matches the target
 
-    while (curr != nullptr || !nodeStack.empty())
+    for (int i = 0; i < A.size(); ++i)
     {
-        while (curr != nullptr)
+        currentSum += A[i];
+
+        if (sumMap.find(currentSum - target) != sumMap.end())
         {
-            nodeStack.push(curr);
-            curr = curr->left;
+            maxLen = max(maxLen, i - sumMap[currentSum - target]);
         }
 
-        curr = nodeStack.top();
-        nodeStack.pop();
-
-        // Check the BST property
-        if (prev != nullptr && curr->val <= prev->val)
+        // Only store the first occurrence to get the longest subarray
+        if (sumMap.find(currentSum) == sumMap.end())
         {
-            return false;
+            sumMap[currentSum] = i;
         }
-
-        prev = curr;
-        curr = curr->right;
     }
 
-    return true;
+    return (maxLen == -1) ? -1 : (A.size() - maxLen); // If no valid subarray found, return -1
 }
 
-bool isValidBST(const vector<string> &root)
+int main()
 {
-    TreeNode *treeRoot = createTreeFromVector(root);
-    return isValid(treeRoot);
+    int n, N;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    vector<int> A(n);
+
+    cout << "Enter the elements of the array: ";
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> A[i];
+    }
+
+    cout << "Enter the special number N: ";
+    cin >> N;
+
+    int result = minNumberOfOperations(A, N);
+    cout << result << endl;
+    return 0;
 }

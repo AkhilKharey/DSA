@@ -1,43 +1,69 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <climits>
 
 using namespace std;
 
-void findEliminatedPlayers(int N, int K)
+// Define a structure to hold pod information
+struct Pod
 {
-    vector<bool> visited(N, false);
-    int current = 0;
-    visited[current] = true;
+    int count; // Current number of pods
+    int cost;  // Cost to increment the pod count by 1
+    int index; // Original index to maintain mapping
+};
 
-    for (int i = 0; i < N - 1; ++i)
+// Function to calculate the minimum total cost
+int minCost(vector<int> &pods, vector<int> &cost)
+{
+    int n = pods.size();
+    vector<Pod> podList(n);
+
+    // Create a list of pods with their counts, costs, and original indices
+    for (int i = 0; i < n; ++i)
     {
-        current = (current + K) % N;
-        visited[current] = true;
+        podList[i] = {pods[i], cost[i], i};
     }
 
-    bool anyEliminated = false;
-    for (int i = 0; i < N; ++i)
+    // Group pods by their counts
+    // For counts with duplicates, sort pods in decreasing order of cost
+    sort(podList.begin(), podList.end(), [](const Pod &a, const Pod &b)
+         {
+             if (a.count != b.count)
+                 return a.count < b.count; // Sort by count ascending
+             else
+                 return a.cost > b.cost; // For same counts, higher cost first
+         });
+
+    long long totalCost = 0;
+    int prevAssignedCount = INT_MIN;
+
+    // Process the pods to assign unique counts
+    for (auto &pod : podList)
     {
-        if (!visited[i])
-        {
-            cout << i + 1 << " ";
-            anyEliminated = true;
-        }
+        // Determine the required count to ensure uniqueness
+        int requiredCount = max(pod.count, prevAssignedCount + 1);
+        int incrementsNeeded = requiredCount - pod.count;
+        // Update the total cost
+        totalCost += static_cast<long long>(incrementsNeeded) * pod.cost;
+        // Update the pod's count to the required count
+        pod.count = requiredCount;
+        // Update the previous assigned count
+        prevAssignedCount = requiredCount;
     }
 
-    if (!anyEliminated)
-    {
-        cout << 0;
-    }
-    cout << endl;
+    return static_cast<int>(totalCost);
 }
 
 int main()
 {
-    int N, K;
-    cin >> N >> K;
+    int n = 6;
+    vector<int> pods = {5, 4, 9, 3, 3, 3};
+    vector<int> cost = {5, 1, 2, 3, 4, 5};
 
-    findEliminatedPlayers(N, K);
+    int result = minCost(pods, cost);
+
+    cout << "Minimum cost to make pod counts unique: " << result << endl;
 
     return 0;
 }

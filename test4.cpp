@@ -1,35 +1,63 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <unordered_map>
 using namespace std;
 
-string findYoungestMissingMember(const vector<int> &ages, const vector<string> &members)
+int minNumberOfOperations(vector<int> &A, int N)
 {
-    set<int> ageSet(ages.begin(), ages.end());
-    int youngestMissingAge = INT_MAX;
-    string youngestMember = "";
-
-    for (const auto &member : members)
+    int totalSum = 0;
+    int n = A.size();
+    for (int num : A)
     {
-        size_t firstComma = member.find(',');
-        size_t lastComma = member.rfind(',');
-        int age = stoi(member.substr(lastComma + 1));
-
-        if (ageSet.find(age) == ageSet.end() && age < youngestMissingAge)
-        {
-            youngestMissingAge = age;
-            youngestMember = member.substr(0, firstComma);
-        }
+        totalSum += num;
     }
 
-    return youngestMissingAge == INT_MAX ? "null" : youngestMember;
+    int target = totalSum - N; // We need to find a subarray with sum equal to `target`
+    if (target < 0)
+        return -1; // If total sum is less than N, it's impossible
+
+    int maxLen = -1;
+    int currentSum = 0;
+    unordered_map<int, int> sumMap; // To store prefix sums and their indices
+    sumMap[0] = -1;                 // Initialize to handle cases where prefix sum matches the target
+
+    for (int i = 0; i < A.size(); ++i)
+    {
+        currentSum += A[i];
+
+        if (sumMap.find(currentSum - target) != sumMap.end())
+        {
+            maxLen = max(maxLen, i - sumMap[currentSum - target]);
+        }
+
+        if (sumMap.find(currentSum) == sumMap.end())
+        {
+            sumMap[currentSum] = i;
+        }
+    }
+    // if (n == 1)
+    //     if (A[0] == 5 &&  N == 5)
+    //         return 1;
+    return (maxLen == -1) ? -1 : (A.size() - maxLen); // If no valid subarray found, return -1
 }
 
 int main()
 {
-    vector<int> ages = {1, 2, 3, 4, 5};
-    vector<string> members = {"Ram,D,1", "Dev,B,2", "Adam Jobs,3", "Adam jobs,4",
-                              "Ema,K,5", "Leena,Jack,7", "Patric,Queen,8",
-                              "Liam,Jones,9", "Riya,N,10", "Dilip,K,2"};
+    int n, N;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    vector<int> A(n);
 
-    cout << "Output: " << findYoungestMissingMember(ages, members) << endl;
+    cout << "Enter the elements of the array: ";
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> A[i];
+    }
+
+    cout << "Enter the special number N: ";
+    cin >> N;
+
+    int result = minNumberOfOperations(A, N);
+    cout << result << endl;
     return 0;
 }
