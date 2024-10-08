@@ -1,157 +1,86 @@
 #include <stdio.h>
+#include <limits.h>
+#include <stdbool.h>
 
-#define INFINITY 999
+#define MAX_N 100 // Maximum number of vertices
 
-void primRecursive(int cost[10][10], int n, int visited[], int totalCost, int edges)
+int N; // Number of vertices in the graph
+
+// Graph represented as an adjacency matrix
+int graph[MAX_N][MAX_N];
+
+// Array to keep track of included vertices in MST
+bool included[MAX_N];
+
+int total_cost = 0; // Variable to store total cost of MST
+
+// Recursive function to perform Prim's algorithm
+void prim(int included_count)
 {
-    int min = INFINITY, u = -1, v = -1;
+    // Base case: if all vertices are included, return
+    if (included_count == N)
+        return;
 
-    for (int i = 0; i < n; i++)
+    int min = INT_MAX;  // Initialize minimum weight to a large value
+    int u = -1, v = -1; // Variables to store the indices of the minimum edge
+
+    // Find the minimum weight edge from included vertices to not included vertices
+    for (int i = 0; i < N; i++)
     {
-        if (visited[i])
-        {
-            for (int j = 0; j < n; j++)
+        if (included[i])
+        { // If vertex i is included in MST
+            for (int j = 0; j < N; j++)
             {
-                if (!visited[j] && cost[i][j] < min)
+                // If vertex j is not included, edge exists, and not a self-loop
+                if (!included[j] && graph[i][j] != 999 && graph[i][j] != 0)
                 {
-                    min = cost[i][j];
-                    u = i;
-                    v = j;
+                    if (graph[i][j] < min)
+                    {
+                        min = graph[i][j]; // Update minimum weight
+                        u = i;
+                        v = j;
+                    }
                 }
             }
         }
     }
 
-    if (v == -1)
+    if (u != -1 && v != -1)
     {
-        printf("\nTotal cost = %d\n", totalCost);
-        return; // MST complete
+        // Include vertex v in MST
+        included[v] = true;
+        printf("Edge (%d, %d) with weight %d\n", u, v, graph[u][v]);
+        total_cost += graph[u][v]; // Add edge weight to total cost
     }
 
-    printf("\n %d -> %d, cost = %d", u + 1, v + 1, min);
-    totalCost += min;
-    visited[v] = 1;
-
-    // Recurse to include the next vertex
-    primRecursive(cost, n, visited, totalCost, edges + 1);
+    // Recur for the next vertex
+    prim(included_count + 1);
 }
 
 int main()
 {
-    int a[10][10], n;
+    // Read the number of vertices
+    printf("Enter the number of vertices: ");
+    scanf("%d", &N);
 
-    printf("\nEnter the number of vertices: ");
-    scanf("%d", &n);
-
-    printf("\nEnter the cost matrix (0 for self-loop and 999 for no edge):\n");
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            scanf("%d", &a[i][j]);
-
-    int visited[10] = {0};
-    visited[0] = 1; // Start from vertex 0
-    printf("\nStarting Prim's algorithm...\n");
-    primRecursive(a, n, visited, 0, 0);
-
-    return 0;
-}
-// -----------------------------------------------------------------------
-#include <stdio.h>
-
-#define INFINITY 999
-
-int prim(int cost[10][10], int source, int n)
-{
-    int visited[10] = {0}, cmp[10], vertex[10], sum = 0;
-
-    // Initialize comparison array and vertex array
-    for (int i = 0; i < n; i++)
+    // Read the adjacency matrix
+    printf("Enter the adjacency matrix (use 0 for self loops and 999 for no edge):\n");
+    for (int i = 0; i < N; i++)
     {
-        cmp[i] = cost[source][i];
-        vertex[i] = source;
-    }
-    visited[source] = 1;
-
-    // Main loop to find MST
-    for (int i = 1; i < n; i++)
-    {
-        int min = INFINITY, u = -1;
-        for (int j = 0; j < n; j++)
+        included[i] = false; // Initialize included array
+        for (int j = 0; j < N; j++)
         {
-            if (!visited[j] && cmp[j] < min)
-            {
-                min = cmp[j];
-                u = j;
-            }
-        }
-        if (u == -1)
-            break; // Exit if no connected vertex is found
-
-        visited[u] = 1;
-        sum += cmp[u];
-        printf("\n %d -> %d, cost = %d", vertex[u] + 1, u + 1, cmp[u]);
-
-        for (int v = 0; v < n; v++)
-        {
-            if (!visited[v] && cost[u][v] < cmp[v])
-            {
-                cmp[v] = cost[u][v];
-                vertex[v] = u;
-            }
-        }
-    }
-    return sum;
-}
-
-int main()
-{
-    int a[10][10], n, source;
-
-    printf("\nEnter the number of vertices: ");
-    scanf("%d", &n);
-
-    // Ensure the number of vertices is within bounds
-    if (n < 1 || n > 10)
-    {
-        printf("\nInvalid number of vertices. Must be between 1 and 10.");
-        return 1;
-    }
-
-    printf("\nEnter the cost matrix (0 for self-loop and 999 for no edge):\n");
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            scanf("%d", &a[i][j]);
+            scanf("%d", &graph[i][j]);
         }
     }
 
-    // Validate the matrix symmetry and diagonal elements
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            if ((i == j && a[i][j] != 0) || (i != j && a[i][j] != a[j][i]))
-            {
-                printf("\nInvalid entry\nCost matrix should be symmetrical & diagonal elements should be zero.");
-                return 1;
-            }
-        }
-    }
+    // Start from vertex 0
+    included[0] = true;
+    printf("Edges in the minimum spanning tree:\n");
+    prim(1); // Start the recursive Prim's algorithm
 
-    printf("\nEnter the source vertex (1 to %d): ", n);
-    scanf("%d", &source);
-    source--; // Adjust for 0-based indexing
-
-    // Validate source input
-    if (source < 0 || source >= n)
-    {
-        printf("\nInvalid source vertex.");
-        return 1;
-    }
-
-    int totalCost = prim(a, source, n);
-    printf("\n\nTotal cost = %d", totalCost);
+    // Print the total cost
+    printf("Total cost of the MST is %d\n", total_cost);
 
     return 0;
 }
