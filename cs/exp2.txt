@@ -1,7 +1,5 @@
 clc;
-
 clear all;
-
 close all;
 
 disp('linear convolution program');
@@ -33,12 +31,16 @@ xlabel('---->n');
 
 ylabel('---->h(n)');grid;
 
-disp('convolution of x(n) & h(n) is y(n) ');
+disp('convolution of x(n) & h(n) is y(n) :');
 
 y=zeros(1,m+n-1);
-
-for i = 1 / m + n - 1 y(i) = 0 for j = 1 / m + n - 1 if(j < i + 1) y(i)=y(i)+x(j)^ * h(i - j + 1) ; end end
-
+for i = 1 : m + n - 1 
+y(i) = 0;
+for j = 1 : m + n - 1 
+if(j < i + 1) 
+y(i)=y(i)+x(j)* h(i - j + 1) ; 
+end 
+end
 end
 
 y
