@@ -1,62 +1,61 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include <algorithm>
 using namespace std;
 
-int minNumberOfOperations(vector<int> &A, int N)
+int minSwap(int N, int K, int A[])
 {
-    int totalSum = 0;
-    for (int num : A)
+    int count = 0;       // Count of swaps performed
+    bool swapped = true; // Flag to check if any swap happened in a pass
+    while (swapped)
     {
-        totalSum += num;
-    }
-
-    int target = totalSum - N; // We need to find a subarray with sum equal to `target`
-    // // If target is 0, no need to remove any elements
-    if (target < 0)
-        return -1; // If total sum is less than N, it's impossible
-
-    int maxLen = -1;
-    int currentSum = 0;
-    unordered_map<int, int> sumMap; // To store prefix sums and their indices
-    sumMap[0] = -1;                 // Initialize to handle cases where prefix sum matches the target
-
-    for (int i = 0; i < A.size(); ++i)
-    {
-        currentSum += A[i];
-
-        if (sumMap.find(currentSum - target) != sumMap.end())
+        swapped = false; // Reset swap flag for the new pass
+        for (int i = 0; i < N; i++)
         {
-            maxLen = max(maxLen, i - sumMap[currentSum - target]);
-        }
-
-        // Only store the first occurrence to get the longest subarray
-        if (sumMap.find(currentSum) == sumMap.end())
-        {
-            sumMap[currentSum] = i;
+            if (A[i] > K)
+            {
+                // Perform the swap
+                int temp = A[i];
+                A[i] = K;
+                K = temp;
+                count++;
+                swapped = true; // A swap has occurred
+            }
         }
     }
-
-    return (maxLen == -1) ? -1 : (A.size() - maxLen); // If no valid subarray found, return -1
+    // Check if the array is sorted in increasing order
+    for (int i = 0; i < N - 1; i++)
+    {
+        if (A[i] > A[i + 1])
+        {
+            return -1; // Impossible to sort
+        }
+    }
+    return count; // Minimum number of swaps needed
 }
 
 int main()
 {
-    int n, N;
-    cout << "Enter number of elements: ";
-    cin >> n;
-    vector<int> A(n);
+    int N, K;
+    cout << "Enter the length of the array and the value of K: ";
+    cin >> N >> K;
 
+    int A[N];
     cout << "Enter the elements of the array: ";
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < N; i++)
     {
         cin >> A[i];
     }
 
-    cout << "Enter the special number N: ";
-    cin >> N;
+    int result = minSwap(N, K, A);
+    if (result != -1)
+    {
+        cout << "Minimum number of swaps to sort the array: " << result << endl;
+    }
+    else
+    {
+        cout << "It is impossible to sort the array." << endl;
+    }
 
-    int result = minNumberOfOperations(A, N);
-    cout << result << endl;
     return 0;
 }

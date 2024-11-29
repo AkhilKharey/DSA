@@ -1,69 +1,42 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <climits>
 
-using namespace std;
-
-// Define a structure to hold pod information
-struct Pod
+// Function to calculate the maximum system throughput
+long long getMaxThroughput(std::vector<int> &host_throughput)
 {
-    int count; // Current number of pods
-    int cost;  // Cost to increment the pod count by 1
-    int index; // Original index to maintain mapping
-};
+    // Sort the host throughputs in ascending order
+    std::sort(host_throughput.begin(), host_throughput.end());
 
-// Function to calculate the minimum total cost
-int minCost(vector<int> &pods, vector<int> &cost)
-{
-    int n = pods.size();
-    vector<Pod> podList(n);
+    int n = host_throughput.size(); // Number of host servers
+    int k = n / 3;                  // Maximum number of clusters
+    long long total_throughput = 0; // Variable to store the total system throughput
 
-    // Create a list of pods with their counts, costs, and original indices
-    for (int i = 0; i < n; ++i)
+    // Loop over the number of clusters
+    for (int i = 0; i < k; ++i)
     {
-        podList[i] = {pods[i], cost[i], i};
+        // Add the median of each cluster to the total throughput
+        total_throughput += host_throughput[n - 2 * i - 2];
     }
 
-    // Group pods by their counts
-    // For counts with duplicates, sort pods in decreasing order of cost
-    sort(podList.begin(), podList.end(), [](const Pod &a, const Pod &b)
-         {
-             if (a.count != b.count)
-                 return a.count < b.count; // Sort by count ascending
-             else
-                 return a.cost > b.cost; // For same counts, higher cost first
-         });
-
-    long long totalCost = 0;
-    int prevAssignedCount = INT_MIN;
-
-    // Process the pods to assign unique counts
-    for (auto &pod : podList)
-    {
-        // Determine the required count to ensure uniqueness
-        int requiredCount = max(pod.count, prevAssignedCount + 1);
-        int incrementsNeeded = requiredCount - pod.count;
-        // Update the total cost
-        totalCost += static_cast<long long>(incrementsNeeded) * pod.cost;
-        // Update the pod's count to the required count
-        pod.count = requiredCount;
-        // Update the previous assigned count
-        prevAssignedCount = requiredCount;
-    }
-
-    return static_cast<int>(totalCost);
+    return total_throughput;
 }
 
 int main()
 {
-    int n = 6;
-    vector<int> pods = {5, 4, 9, 3, 3, 3};
-    vector<int> cost = {5, 1, 2, 3, 4, 5};
+    int n; // Number of host servers
+    std::cin >> n;
 
-    int result = minCost(pods, cost);
+    std::vector<int> host_throughput(n); // Vector to store the throughput of each host server
 
-    cout << "Minimum cost to make pod counts unique: " << result << endl;
+    // Input the throughput values
+    for (int i = 0; i < n; ++i)
+    {
+        std::cin >> host_throughput[i];
+    }
+
+    // Calculate and output the maximum system throughput
+    std::cout << getMaxThroughput(host_throughput) << std::endl;
 
     return 0;
 }

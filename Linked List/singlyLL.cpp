@@ -63,7 +63,7 @@ void InsertAtMiddle(Node *&head, Node *&tail, int pos, int data)
     NodeToInsert->next = temp->next;
     temp->next = NodeToInsert;
 }
-void deleteNode(int position, Node *&head,Node* &tail)
+void deleteNode(int position, Node *&head, Node *&tail)
 {
     if (position == 1)
     {
@@ -85,13 +85,13 @@ void deleteNode(int position, Node *&head,Node* &tail)
             curr = curr->next;
             cnt++;
         }
-        if(curr->next==NULL)
+        if (curr->next == NULL)
         {
             // to update tail if last node is deleted
-            tail=prev;
+            tail = prev;
         }
-        prev->next=curr->next;
-        curr->next=NULL;
+        prev->next = curr->next;
+        curr->next = NULL;
         delete curr;
     }
 }
@@ -105,7 +105,7 @@ void print(Node *&head)
         temp = temp->next;
     }
     cout << endl;
-} 
+}
 
 int main()
 {
@@ -125,9 +125,9 @@ int main()
     print(head);
     InsertAtMiddle(head, tail, 3, 13);
     print(head);
-    deleteNode(5,head,tail);
+    deleteNode(5, head, tail);
     print(head);
-    cout<<"head is"<<head->data<<endl;
-    cout<<"tail is"<<tail->data<<endl;
+    cout << "head is" << head->data << endl;
+    cout << "tail is" << tail->data << endl;
     return 0;
 }

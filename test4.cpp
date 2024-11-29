@@ -1,63 +1,68 @@
 #include <iostream>
-#include <vector>
-#include <unordered_map>
 using namespace std;
 
-int minNumberOfOperations(vector<int> &A, int N)
+long long andyTrucker(int N, int K, long long *A)
 {
-    int totalSum = 0;
-    int n = A.size();
-    for (int num : A)
+    // Edge case: if K > N, it's not possible to pick K consecutive elements
+    if (K > N)
     {
-        totalSum += num;
+        return -1;
     }
 
-    int target = totalSum - N; // We need to find a subarray with sum equal to `target`
-    if (target < 0)
-        return -1; // If total sum is less than N, it's impossible
-
-    int maxLen = -1;
-    int currentSum = 0;
-    unordered_map<int, int> sumMap; // To store prefix sums and their indices
-    sumMap[0] = -1;                 // Initialize to handle cases where prefix sum matches the target
-
-    for (int i = 0; i < A.size(); ++i)
+    // Calculate the initial sum of the first K elements
+    long long currentSum = 0;
+    for (int i = 0; i < K; i++)
     {
         currentSum += A[i];
+    }
 
-        if (sumMap.find(currentSum - target) != sumMap.end())
-        {
-            maxLen = max(maxLen, i - sumMap[currentSum - target]);
-        }
+    // Initialize maxWeight with the sum of the first K elements
+    long long maxWeight = currentSum;
 
-        if (sumMap.find(currentSum) == sumMap.end())
+    // Slide the window across the array
+    for (int i = K; i < N; i++)
+    {
+        // Slide the window by removing the first element of the previous window
+        // and adding the next element in the array
+        currentSum = currentSum - A[i - K] + A[i];
+
+        // Update maxWeight if the new currentSum is greater
+        if (currentSum > maxWeight)
         {
-            sumMap[currentSum] = i;
+            maxWeight = currentSum;
         }
     }
-    // if (n == 1)
-    //     if (A[0] == 5 &&  N == 5)
-    //         return 1;
-    return (maxLen == -1) ? -1 : (A.size() - maxLen); // If no valid subarray found, return -1
+
+    return maxWeight;
 }
 
 int main()
 {
-    int n, N;
-    cout << "Enter number of elements: ";
-    cin >> n;
-    vector<int> A(n);
+    int N, K;
+    cout << "Enter the number of elements (N) and the window size (K): ";
+    cin >> N >> K;
 
-    cout << "Enter the elements of the array: ";
-    for (int i = 0; i < n; ++i)
+    // Dynamic array to hold the input values
+    long long *A = new long long[N];
+    cout << "Enter " << N << " elements:\n";
+    for (int i = 0; i < N; i++)
     {
         cin >> A[i];
     }
 
-    cout << "Enter the special number N: ";
-    cin >> N;
+    // Call the function and display the result
+    long long result = andyTrucker(N, K, A);
+    if (result != -1)
+    {
+        cout << "Maximum sum of " << K << " consecutive elements is: " << result << endl;
+    }
+    else
+    {
+        cout << "Window size K is larger than the array size N." << endl;
+    }
 
-    int result = minNumberOfOperations(A, N);
-    cout << result << endl;
+    // Free the dynamically allocated memory
+    delete[] A;
+
     return 0;
 }
