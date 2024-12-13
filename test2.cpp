@@ -1,61 +1,76 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <algorithm>
+#include <climits>
+
 using namespace std;
 
-int minSwap(int N, int K, int A[])
+int calculateMaxQuality(int impactFactor, vector<int> ratings)
 {
-    int count = 0;       // Count of swaps performed
-    bool swapped = true; // Flag to check if any swap happened in a pass
-    while (swapped)
+    int n = ratings.size();
+    int maxAmplifyScore = INT_MIN;
+    int maxAdjustScore = INT_MIN;
+
+    auto kadane = [](const vector<int> &arr)
     {
-        swapped = false; // Reset swap flag for the new pass
-        for (int i = 0; i < N; i++)
+        int maxSum = INT_MIN, currentSum = 0;
+        for (int value : arr)
         {
-            if (A[i] > K)
+            currentSum += value;
+            maxSum = max(maxSum, currentSum);
+            if (currentSum < 0)
+                currentSum = 0;
+        }
+        return maxSum;
+    };
+
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = i; j < n; ++j)
+        {
+            vector<int> modifiedRatings = ratings;
+
+            for (int k = i; k <= j; ++k)
             {
-                // Perform the swap
-                int temp = A[i];
-                A[i] = K;
-                K = temp;
-                count++;
-                swapped = true; // A swap has occurred
+                modifiedRatings[k] *= impactFactor;
             }
+            maxAmplifyScore = max(maxAmplifyScore, kadane(modifiedRatings));
+
+            modifiedRatings = ratings;
+            for (int k = i; k <= j; ++k)
+            {
+                if (modifiedRatings[k] >= 0)
+                {
+                    modifiedRatings[k] = floor(modifiedRatings[k] / (double)impactFactor);
+                }
+                else
+                {
+                    modifiedRatings[k] = ceil(modifiedRatings[k] / (double)impactFactor);
+                }
+            }
+            maxAdjustScore = max(maxAdjustScore, kadane(modifiedRatings));
         }
     }
-    // Check if the array is sorted in increasing order
-    for (int i = 0; i < N - 1; i++)
-    {
-        if (A[i] > A[i + 1])
-        {
-            return -1; // Impossible to sort
-        }
-    }
-    return count; // Minimum number of swaps needed
+
+    return max(maxAmplifyScore, maxAdjustScore);
 }
 
 int main()
 {
-    int N, K;
-    cout << "Enter the length of the array and the value of K: ";
-    cin >> N >> K;
+    int impactFactor;
+    cin >> impactFactor;
 
-    int A[N];
-    cout << "Enter the elements of the array: ";
-    for (int i = 0; i < N; i++)
+    int n;
+    cin >> n;
+
+    vector<int> ratings(n);
+    for (int i = 0; i < n; ++i)
     {
-        cin >> A[i];
+        cin >> ratings[i];
     }
 
-    int result = minSwap(N, K, A);
-    if (result != -1)
-    {
-        cout << "Minimum number of swaps to sort the array: " << result << endl;
-    }
-    else
-    {
-        cout << "It is impossible to sort the array." << endl;
-    }
+    cout << calculateMaxQuality(impactFactor, ratings) << endl;
 
     return 0;
 }
