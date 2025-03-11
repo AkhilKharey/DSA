@@ -1,68 +1,43 @@
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
 using namespace std;
+typedef long long int64;
 
-long long andyTrucker(int N, int K, long long *A)
+int ArithmeticEquation(int N)
 {
-    // Edge case: if K > N, it's not possible to pick K consecutive elements
-    if (K > N)
+    bool *prime = new bool[N + 1];
+    for (int i = 1; i <= N; i++)
+        prime[i] = 1;
+
+    int64 answer = 1;
+    for (int p = 2; p <= N; p++)
     {
-        return -1;
-    }
-
-    // Calculate the initial sum of the first K elements
-    long long currentSum = 0;
-    for (int i = 0; i < K; i++)
-    {
-        currentSum += A[i];
-    }
-
-    // Initialize maxWeight with the sum of the first K elements
-    long long maxWeight = currentSum;
-
-    // Slide the window across the array
-    for (int i = K; i < N; i++)
-    {
-        // Slide the window by removing the first element of the previous window
-        // and adding the next element in the array
-        currentSum = currentSum - A[i - K] + A[i];
-
-        // Update maxWeight if the new currentSum is greater
-        if (currentSum > maxWeight)
+        if (prime[p])
         {
-            maxWeight = currentSum;
+            for (int j = 2 * p; j <= N; j += p)
+                prime[j] = 0;
+
+            int64 e = 0;
+            for (int64 j = p; j <= N; j *= p)
+                e += N / j;
+
+            answer = (answer * (1 + 2 * e)) % 1000007;
         }
     }
 
-    return maxWeight;
+    delete[] prime; // Free allocated memory
+    return answer;
 }
 
 int main()
 {
-    int N, K;
-    cout << "Enter the number of elements (N) and the window size (K): ";
-    cin >> N >> K;
+    int n;
+    cout << "Enter a value for n: ";
+    cin >> n;
 
-    // Dynamic array to hold the input values
-    long long *A = new long long[N];
-    cout << "Enter " << N << " elements:\n";
-    for (int i = 0; i < N; i++)
-    {
-        cin >> A[i];
-    }
-
-    // Call the function and display the result
-    long long result = andyTrucker(N, K, A);
-    if (result != -1)
-    {
-        cout << "Maximum sum of " << K << " consecutive elements is: " << result << endl;
-    }
-    else
-    {
-        cout << "Window size K is larger than the array size N." << endl;
-    }
-
-    // Free the dynamically allocated memory
-    delete[] A;
+    int result = ArithmeticEquation(n);
+    cout << "Result: " << result << endl;
 
     return 0;
 }

@@ -1,76 +1,49 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <algorithm>
-#include <climits>
-
+// code to find largest number with
+// given conditions.
+#include <bits/stdc++.h>
 using namespace std;
 
-int calculateMaxQuality(int impactFactor, vector<int> ratings)
+// function to find the largest number
+// with given conditions.
+int largestNum(int num)
 {
-    int n = ratings.size();
-    int maxAmplifyScore = INT_MIN;
-    int maxAdjustScore = INT_MIN;
-
-    auto kadane = [](const vector<int> &arr)
+    int max_digit = -1;
+    int max_digit_indx = -1;
+    int l_indx = -1;
+    int r_indx = -1;
+    string num_in_str = to_string(num);
+    for (int i = num_in_str.size() - 1; i >= 0; i--)
     {
-        int maxSum = INT_MIN, currentSum = 0;
-        for (int value : arr)
+
+        if (num_in_str[i] > max_digit)
         {
-            currentSum += value;
-            maxSum = max(maxSum, currentSum);
-            if (currentSum < 0)
-                currentSum = 0;
+            max_digit = num_in_str[i];
+            max_digit_indx = i;
+            continue;
         }
-        return maxSum;
-    };
-
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = i; j < n; ++j)
+        if (num_in_str[i] < max_digit)
         {
-            vector<int> modifiedRatings = ratings;
-
-            for (int k = i; k <= j; ++k)
-            {
-                modifiedRatings[k] *= impactFactor;
-            }
-            maxAmplifyScore = max(maxAmplifyScore, kadane(modifiedRatings));
-
-            modifiedRatings = ratings;
-            for (int k = i; k <= j; ++k)
-            {
-                if (modifiedRatings[k] >= 0)
-                {
-                    modifiedRatings[k] = floor(modifiedRatings[k] / (double)impactFactor);
-                }
-                else
-                {
-                    modifiedRatings[k] = ceil(modifiedRatings[k] / (double)impactFactor);
-                }
-            }
-            maxAdjustScore = max(maxAdjustScore, kadane(modifiedRatings));
+            l_indx = i;
+            r_indx = max_digit_indx;
         }
     }
 
-    return max(maxAmplifyScore, maxAdjustScore);
+    if (l_indx == -1)
+        return num;
+
+    swap(num_in_str[l_indx], num_in_str[r_indx]);
+
+    return stoi(num_in_str);
 }
 
+// driver function
 int main()
 {
-    int impactFactor;
-    cin >> impactFactor;
-
-    int n;
-    cin >> n;
-
-    vector<int> ratings(n);
-    for (int i = 0; i < n; ++i)
-    {
-        cin >> ratings[i];
-    }
-
-    cout << calculateMaxQuality(impactFactor, ratings) << endl;
-
+    int num = 789;
+    cout << largestNum(num) << endl;
+    num = 49658;
+    cout << largestNum(num) << endl;
+    num = 2135;
+    cout << largestNum(num) << endl;
     return 0;
 }
